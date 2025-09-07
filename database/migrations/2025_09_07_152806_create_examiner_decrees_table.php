@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('examiner_decrees', function (Blueprint $table) {
+            $table->id();
+            $table->string('letter_number');
+            $table->date('date');
+            $table->bigInteger('student_id');
+            $table->bigInteger('document_type_id');
+            $table->string('title');
+            $table->string('year');
+            $table->bigInteger('examiner_1_id');
+            $table->bigInteger('examiner_2_id')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('examiner_decrees');
+    }
+};
