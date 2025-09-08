@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('letter_number');
             $table->date('date');
-            $table->bigInteger('student_id');
-            $table->bigInteger('document_type_id');
+            $table->foreignId('student_id');
+            $table->foreignId('document_type_id');
             $table->string('title');
             $table->string('year');
-            $table->bigInteger('supervisor_1_id');
-            $table->bigInteger('supervisor_2_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

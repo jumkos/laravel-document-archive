@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('study_programs', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+        Schema::create('examiner_decree_lecturer', function (Blueprint $table) {
+            $table->foreignId('examiner_decree_id');
+            $table->foreignId('lecturer_id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('study_programs');
+        Schema::dropIfExists('examiner_decree_lecturer');
     }
 };

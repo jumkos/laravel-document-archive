@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('diplomas', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('student_id');
+            $table->foreignId('student_id');
             $table->string('diploma_number');
             $table->string('year');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('theses', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('student_id');
-            $table->bigInteger('document_type_id');
+            $table->foreignId('student_id');
+            $table->foreignId('document_type_id');
             $table->string('year');
             $table->string('title');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

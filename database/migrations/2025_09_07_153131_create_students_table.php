@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('student_number');
             $table->string('name');
-            $table->bigInteger('study_program_id');
+            $table->foreignId('study_program_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
