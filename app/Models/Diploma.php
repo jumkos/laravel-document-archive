@@ -9,7 +9,7 @@ class Diploma extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['student_id', 'document_type_id', 'year', 'title'];
+    protected $fillable = ['student_id', 'year', 'diploma_number'];
 
     public function student()
     {

@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudyProgramController;
 
-Route::apiResource('study-programs', StudyProgramController::class);
+Route::apiResource('study-programs', App\Http\Controllers\StudyProgramController::class);
 Route::apiResource('document-types', App\Http\Controllers\DocumentTypeController::class);
 Route::apiResource('certificate-letters', App\Http\Controllers\CertificateLetterController::class);
 Route::apiResource('outgoing-letters', App\Http\Controllers\OutgoingLetterController::class);

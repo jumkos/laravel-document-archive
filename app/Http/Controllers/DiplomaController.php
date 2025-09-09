@@ -22,9 +22,8 @@ class DiplomaController extends Controller
     {
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
             'year' => 'required|string|max:4',
-            'title' => 'required|string|max:255',
+            'diploma_number' => 'required|string|max:255',
         ]);
         $diploma = \App\Models\Diploma::create($validated);
         return response()->json($diploma, 201);
@@ -53,9 +52,8 @@ class DiplomaController extends Controller
         }
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
             'year' => 'required|string|max:4',
-            'title' => 'required|string|max:255',
+            'diploma_number' => 'required|string|max:255',
         ]);
         $diploma->update($validated);
         return response()->json($diploma);
