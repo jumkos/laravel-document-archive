@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -12,7 +13,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = \App\Models\Student::all();
-        return response()->json($students);
+        return ApiResponse::ok($students->toArray());
     }
 
     /**
@@ -26,7 +27,7 @@ class StudentController extends Controller
             'study_program_id' => 'required|integer|exists:study_programs,id',
         ]);
         $student = \App\Models\Student::create($validated);
-        return response()->json($student, 201);
+        return ApiResponse::ok($student->toArray());
     }
 
     /**
@@ -36,9 +37,9 @@ class StudentController extends Controller
     {
         $student = \App\Models\Student::find($id);
         if (!$student) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($student);
+        return ApiResponse::ok($student->toArray());
     }
 
     /**
@@ -48,7 +49,7 @@ class StudentController extends Controller
     {
         $student = \App\Models\Student::find($id);
         if (!$student) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -56,7 +57,7 @@ class StudentController extends Controller
             'study_program_id' => 'required|integer|exists:study_programs,id',
         ]);
         $student->update($validated);
-        return response()->json($student);
+        return ApiResponse::ok($student->toArray());
     }
 
     /**
@@ -66,9 +67,9 @@ class StudentController extends Controller
     {
         $student = \App\Models\Student::find($id);
         if (!$student) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $student->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }
