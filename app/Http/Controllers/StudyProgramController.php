@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class StudyProgramController extends Controller
@@ -12,7 +13,7 @@ class StudyProgramController extends Controller
     public function index()
     {
         $programs = \App\Models\StudyProgram::all();
-        return response()->json($programs);
+        return ApiResponse::ok($programs->toArray());
     }
 
     /**
@@ -24,7 +25,7 @@ class StudyProgramController extends Controller
             'name' => 'required|string|max:255',
         ]);
         $program = \App\Models\StudyProgram::create($validated);
-        return response()->json($program, 201);
+        return ApiResponse::ok($program->toArray());
     }
 
     /**
@@ -34,9 +35,9 @@ class StudyProgramController extends Controller
     {
         $program = \App\Models\StudyProgram::find($id);
         if (!$program) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($program);
+        return ApiResponse::ok($program->toArray());
     }
 
     /**
@@ -46,13 +47,13 @@ class StudyProgramController extends Controller
     {
         $program = \App\Models\StudyProgram::find($id);
         if (!$program) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
         $program->update($validated);
-        return response()->json($program);
+        return ApiResponse::ok($program->toArray());
     }
 
     /**
@@ -62,9 +63,9 @@ class StudyProgramController extends Controller
     {
         $program = \App\Models\StudyProgram::find($id);
         if (!$program) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $program->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

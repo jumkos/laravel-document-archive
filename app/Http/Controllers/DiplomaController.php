@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class DiplomaController extends Controller
@@ -12,7 +13,7 @@ class DiplomaController extends Controller
     public function index()
     {
         $diplomas = \App\Models\Diploma::all();
-        return response()->json($diplomas);
+        return ApiResponse::ok($diplomas->toArray());
     }
 
     /**
@@ -21,12 +22,12 @@ class DiplomaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'student_id' => 'required|integer|exists:students,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
             'diploma_number' => 'required|string|max:255',
         ]);
         $diploma = \App\Models\Diploma::create($validated);
-        return response()->json($diploma, 201);
+        return ApiResponse::ok($diploma->toArray());
     }
 
     /**
@@ -36,9 +37,9 @@ class DiplomaController extends Controller
     {
         $diploma = \App\Models\Diploma::find($id);
         if (!$diploma) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($diploma);
+        return ApiResponse::ok($diploma->toArray());
     }
 
     /**
@@ -48,15 +49,15 @@ class DiplomaController extends Controller
     {
         $diploma = \App\Models\Diploma::find($id);
         if (!$diploma) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
-            'student_id' => 'required|integer|exists:students,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
             'diploma_number' => 'required|string|max:255',
         ]);
         $diploma->update($validated);
-        return response()->json($diploma);
+        return ApiResponse::ok($diploma->toArray());
     }
 
     /**
@@ -66,9 +67,9 @@ class DiplomaController extends Controller
     {
         $diploma = \App\Models\Diploma::find($id);
         if (!$diploma) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $diploma->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

@@ -24,7 +24,7 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'student_number' => 'required|string|max:255',
-            'study_program_id' => 'required|integer|exists:study_programs,id',
+            'study_program_id' => 'required|integer|exists:study_programs,id,deleted_at,NULL',
         ]);
         $student = \App\Models\Student::create($validated);
         return ApiResponse::ok($student->toArray());
@@ -54,7 +54,7 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'student_number' => 'required|string|max:255',
-            'study_program_id' => 'required|integer|exists:study_programs,id',
+            'study_program_id' => 'required|integer|exists:study_programs,id,deleted_at,NULL',
         ]);
         $student->update($validated);
         return ApiResponse::ok($student->toArray());

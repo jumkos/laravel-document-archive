@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class ThesisController extends Controller
@@ -12,7 +13,7 @@ class ThesisController extends Controller
     public function index()
     {
         $theses = \App\Models\Thesis::all();
-        return response()->json($theses);
+        return ApiResponse::ok($theses->toArray());
     }
 
     /**
@@ -21,13 +22,13 @@ class ThesisController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
             'title' => 'required|string|max:255',
         ]);
         $thesis = \App\Models\Thesis::create($validated);
-        return response()->json($thesis, 201);
+        return ApiResponse::ok($thesis->toArray());
     }
 
     /**
@@ -37,9 +38,9 @@ class ThesisController extends Controller
     {
         $thesis = \App\Models\Thesis::find($id);
         if (!$thesis) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($thesis);
+        return ApiResponse::ok($thesis->toArray());
     }
 
     /**
@@ -49,16 +50,16 @@ class ThesisController extends Controller
     {
         $thesis = \App\Models\Thesis::find($id);
         if (!$thesis) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
             'title' => 'required|string|max:255',
         ]);
         $thesis->update($validated);
-        return response()->json($thesis);
+        return ApiResponse::ok($thesis->toArray());
     }
 
     /**
@@ -68,9 +69,9 @@ class ThesisController extends Controller
     {
         $thesis = \App\Models\Thesis::find($id);
         if (!$thesis) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $thesis->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

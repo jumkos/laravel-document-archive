@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class DocumentTypeController extends Controller
@@ -12,7 +13,7 @@ class DocumentTypeController extends Controller
     public function index()
     {
         $types = \App\Models\DocumentType::all();
-        return response()->json($types);
+        return ApiResponse::ok($types->toArray());
     }
 
     /**
@@ -24,7 +25,7 @@ class DocumentTypeController extends Controller
             'name' => 'required|string|max:255',
         ]);
         $type = \App\Models\DocumentType::create($validated);
-        return response()->json($type, 201);
+        return ApiResponse::ok($type->toArray());
     }
 
     /**
@@ -34,9 +35,9 @@ class DocumentTypeController extends Controller
     {
         $type = \App\Models\DocumentType::find($id);
         if (!$type) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($type);
+        return ApiResponse::ok($type->toArray());
     }
 
     /**
@@ -46,13 +47,13 @@ class DocumentTypeController extends Controller
     {
         $type = \App\Models\DocumentType::find($id);
         if (!$type) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
         $type->update($validated);
-        return response()->json($type);
+        return ApiResponse::ok($type->toArray());
     }
 
     /**
@@ -62,9 +63,9 @@ class DocumentTypeController extends Controller
     {
         $type = \App\Models\DocumentType::find($id);
         if (!$type) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $type->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

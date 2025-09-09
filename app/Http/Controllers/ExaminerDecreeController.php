@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class ExaminerDecreeController extends Controller
@@ -12,7 +13,7 @@ class ExaminerDecreeController extends Controller
     public function index()
     {
         $decrees = \App\Models\ExaminerDecree::with('lecturers')->get();
-        return response()->json($decrees);
+        return ApiResponse::ok($decrees->toArray());
     }
 
     /**
@@ -23,20 +24,20 @@ class ExaminerDecreeController extends Controller
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'title' => 'required|string|max:255',
             'year' => 'required|string|max:4',
             'lecturer_ids' => 'array',
-            'lecturer_ids.*' => 'integer|exists:lecturers,id',
+            'lecturer_ids.*' => 'integer|exists:lecturers,id,deleted_at,NULL',
         ]);
         $lecturerIds = $request->input('lecturer_ids', []);
         $decree = \App\Models\ExaminerDecree::create($validated);
         if (!empty($lecturerIds)) {
             $decree->lecturers()->sync($lecturerIds);
         }
-        $decree->load('lecturers');
-        return response()->json($decree, 201);
+        $decree->load('lecturers')->load('student')->load('documentType');
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -44,11 +45,11 @@ class ExaminerDecreeController extends Controller
      */
     public function show(string $id)
     {
-        $decree = \App\Models\ExaminerDecree::with('lecturers')->find($id);
+        $decree = \App\Models\ExaminerDecree::with('lecturers')->with('student')->with('documentType')->find($id);
         if (!$decree) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($decree);
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -58,17 +59,17 @@ class ExaminerDecreeController extends Controller
     {
         $decree = \App\Models\ExaminerDecree::find($id);
         if (!$decree) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'title' => 'required|string|max:255',
             'year' => 'required|string|max:4',
             'lecturer_ids' => 'array',
-            'lecturer_ids.*' => 'integer|exists:lecturers,id',
+            'lecturer_ids.*' => 'integer|exists:lecturers,id,deleted_at,NULL',
         ]);
         $lecturerIds = $request->input('lecturer_ids', []);
         $decree->update($validated);
@@ -76,7 +77,7 @@ class ExaminerDecreeController extends Controller
             $decree->lecturers()->sync($lecturerIds);
         }
         $decree->load('lecturers');
-        return response()->json($decree);
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -89,6 +90,6 @@ class ExaminerDecreeController extends Controller
             return response()->json(['message' => 'Not Found'], 404);
         }
         $decree->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

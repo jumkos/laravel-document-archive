@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class LecturerController extends Controller
@@ -12,7 +13,7 @@ class LecturerController extends Controller
     public function index()
     {
         $lecturers = \App\Models\Lecturer::all();
-        return response()->json($lecturers);
+        return ApiResponse::ok($lecturers->toArray());
     }
 
     /**
@@ -25,7 +26,7 @@ class LecturerController extends Controller
             'employee_number' => 'required|string|max:255',
         ]);
         $lecturer = \App\Models\Lecturer::create($validated);
-        return response()->json($lecturer, 201);
+        return ApiResponse::ok($lecturer->toArray());
     }
 
     /**
@@ -35,9 +36,9 @@ class LecturerController extends Controller
     {
         $lecturer = \App\Models\Lecturer::find($id);
         if (!$lecturer) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($lecturer);
+        return ApiResponse::ok($lecturer->toArray());
     }
 
     /**
@@ -47,14 +48,14 @@ class LecturerController extends Controller
     {
         $lecturer = \App\Models\Lecturer::find($id);
         if (!$lecturer) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'employee_number' => 'required|string|max:255',
         ]);
         $lecturer->update($validated);
-        return response()->json($lecturer);
+        return ApiResponse::ok($lecturer->toArray());
     }
 
     /**

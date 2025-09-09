@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class SupervisorDecreeController extends Controller
@@ -12,7 +13,7 @@ class SupervisorDecreeController extends Controller
     public function index()
     {
         $decrees = \App\Models\SupervisorDecree::all();
-        return response()->json($decrees);
+        return ApiResponse::ok($decrees->toArray());
     }
 
     /**
@@ -23,12 +24,12 @@ class SupervisorDecreeController extends Controller
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'title' => 'required|string|max:255',
             'year' => 'required|string|max:4',
             'lecturer_ids' => 'array',
-            'lecturer_ids.*' => 'integer|exists:lecturers,id',
+            'lecturer_ids.*' => 'integer|exists:lecturers,id,deleted_at,NULL',
         ]);
         $lecturerIds = $request->input('lecturer_ids', []);
         $decree = \App\Models\SupervisorDecree::create($validated);
@@ -36,7 +37,7 @@ class SupervisorDecreeController extends Controller
             $decree->lecturers()->sync($lecturerIds);
         }
         $decree->load('lecturers');
-        return response()->json($decree, 201);
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -46,9 +47,9 @@ class SupervisorDecreeController extends Controller
     {
         $decree = \App\Models\SupervisorDecree::find($id);
         if (!$decree) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($decree);
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -58,17 +59,17 @@ class SupervisorDecreeController extends Controller
     {
         $decree = \App\Models\SupervisorDecree::find($id);
         if (!$decree) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
-            'student_id' => 'required|integer|exists:students,id',
-            'document_type_id' => 'required|integer|exists:document_types,id',
+            'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
+            'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'title' => 'required|string|max:255',
             'year' => 'required|string|max:4',
             'lecturer_ids' => 'array',
-            'lecturer_ids.*' => 'integer|exists:lecturers,id',
+            'lecturer_ids.*' => 'integer|exists:lecturers,id,deleted_at,NULL',
         ]);
         $lecturerIds = $request->input('lecturer_ids', []);
         $decree->update($validated);
@@ -76,7 +77,7 @@ class SupervisorDecreeController extends Controller
             $decree->lecturers()->sync($lecturerIds);
         }
         $decree->load('lecturers');
-        return response()->json($decree);
+        return ApiResponse::ok($decree->toArray());
     }
 
     /**
@@ -86,9 +87,9 @@ class SupervisorDecreeController extends Controller
     {
         $decree = \App\Models\SupervisorDecree::find($id);
         if (!$decree) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $decree->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }

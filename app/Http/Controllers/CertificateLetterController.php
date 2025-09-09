@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class CertificateLetterController extends Controller
@@ -12,7 +13,7 @@ class CertificateLetterController extends Controller
     public function index()
     {
         $letters = \App\Models\CertificateLetter::all();
-        return response()->json($letters);
+        return ApiResponse::ok($letters->toArray());
     }
 
     /**
@@ -26,7 +27,7 @@ class CertificateLetterController extends Controller
             'subject' => 'required|string|max:255',
         ]);
         $letter = \App\Models\CertificateLetter::create($validated);
-        return response()->json($letter, 201);
+        return ApiResponse::ok($letter->toArray());
     }
 
     /**
@@ -36,9 +37,9 @@ class CertificateLetterController extends Controller
     {
         $letter = \App\Models\CertificateLetter::find($id);
         if (!$letter) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
-        return response()->json($letter);
+        return ApiResponse::ok($letter->toArray());
     }
 
     /**
@@ -48,7 +49,7 @@ class CertificateLetterController extends Controller
     {
         $letter = \App\Models\CertificateLetter::find($id);
         if (!$letter) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255',
@@ -56,7 +57,7 @@ class CertificateLetterController extends Controller
             'subject' => 'required|string|max:255',
         ]);
         $letter->update($validated);
-        return response()->json($letter);
+        return ApiResponse::ok($letter->toArray());
     }
 
     /**
@@ -66,9 +67,9 @@ class CertificateLetterController extends Controller
     {
         $letter = \App\Models\CertificateLetter::find($id);
         if (!$letter) {
-            return response()->json(['message' => 'Not Found'], 404);
+            return ApiResponse::notFound();
         }
         $letter->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+        return ApiResponse::ok(['message' => 'Deleted successfully']);
     }
 }
