@@ -22,7 +22,7 @@ class SupervisorDecreeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
+            'letter_number' => 'required|string|max:255|unique:supervisor_decrees',
             'date' => 'required|date',
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
@@ -62,7 +62,6 @@ class SupervisorDecreeController extends Controller
             return ApiResponse::notFound();
         }
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',

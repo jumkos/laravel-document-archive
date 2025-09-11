@@ -22,7 +22,7 @@ class CertificateLetterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
+            'letter_number' => 'required|string|max:255|unique:certificate_letters',
             'date' => 'required|date',
             'subject' => 'required|string|max:255',
         ]);
@@ -52,7 +52,6 @@ class CertificateLetterController extends Controller
             return ApiResponse::notFound();
         }
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
             'subject' => 'required|string|max:255',
         ]);

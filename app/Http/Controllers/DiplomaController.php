@@ -24,7 +24,7 @@ class DiplomaController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
-            'diploma_number' => 'required|string|max:255',
+            'diploma_number' => 'required|string|max:255|unique:diplomas',
         ]);
         $diploma = \App\Models\Diploma::create($validated);
         return ApiResponse::ok($diploma->toArray());
@@ -54,7 +54,6 @@ class DiplomaController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
-            'diploma_number' => 'required|string|max:255',
         ]);
         $diploma->update($validated);
         return ApiResponse::ok($diploma->toArray());

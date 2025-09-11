@@ -25,7 +25,7 @@ class ThesisController extends Controller
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:255|unique:theses',
         ]);
         $thesis = \App\Models\Thesis::create($validated);
         return ApiResponse::ok($thesis->toArray());
@@ -56,7 +56,6 @@ class ThesisController extends Controller
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
-            'title' => 'required|string|max:255',
         ]);
         $thesis->update($validated);
         return ApiResponse::ok($thesis->toArray());

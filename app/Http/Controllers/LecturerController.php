@@ -23,7 +23,7 @@ class LecturerController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'employee_number' => 'required|string|max:255',
+            'employee_number' => 'required|string|max:255|unique:lecturers',
         ]);
         $lecturer = \App\Models\Lecturer::create($validated);
         return ApiResponse::ok($lecturer->toArray());
@@ -52,7 +52,6 @@ class LecturerController extends Controller
         }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'employee_number' => 'required|string|max:255',
         ]);
         $lecturer->update($validated);
         return ApiResponse::ok($lecturer->toArray());

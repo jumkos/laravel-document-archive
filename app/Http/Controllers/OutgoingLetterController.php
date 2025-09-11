@@ -22,7 +22,7 @@ class OutgoingLetterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
+            'letter_number' => 'required|string|max:255|unique:outgoing_letters',
             'date' => 'required|date',
             'subject' => 'required|string|max:255',
             'recipient' => 'required|string|max:255',
@@ -53,7 +53,6 @@ class OutgoingLetterController extends Controller
             return ApiResponse::notFound();
         }
         $validated = $request->validate([
-            'letter_number' => 'required|string|max:255',
             'date' => 'required|date',
             'subject' => 'required|string|max:255',
             'recipient' => 'required|string|max:255',
