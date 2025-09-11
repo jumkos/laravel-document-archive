@@ -10,4 +10,8 @@ class OutgoingLetter extends Model
     use SoftDeletes;
 
     protected $fillable = ['letter_number', 'date', 'subject', 'recipient'];
+
+    protected $casts = [
+        'id' => HashId::class
+    ];
 }

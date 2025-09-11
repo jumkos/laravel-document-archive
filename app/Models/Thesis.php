@@ -11,6 +11,10 @@ class Thesis extends Model
 
     protected $fillable = ['student_id', 'document_type_id', 'year', 'title'];
 
+    protected $casts = [
+        'id' => HashId::class
+    ];
+
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_id', 'id');

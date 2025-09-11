@@ -11,6 +11,10 @@ class Student extends Model
 
     protected $fillable = ['student_number', 'name', 'study_program_id'];
 
+    protected $casts = [
+        'id' => HashId::class
+    ];
+
     public function theses()
     {
         return $this->hasMany(Thesis::class, 'student_id', 'id');

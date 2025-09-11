@@ -9,6 +9,10 @@ class Lecturer extends Model
 {
     use SoftDeletes;
     protected $fillable = ['name', 'employee_number'];
+
+    protected $casts = [
+        'id' => HashId::class
+    ];
     public function examinerDecrees()
     {
         return $this->belongsToMany(ExaminerDecree::class, 'examiner_decree_lecturer', 'lecturer_id', 'examiner_decree_id');

@@ -13,6 +13,10 @@ class ExaminerDecree extends Model
         'letter_number', 'date', 'student_id', 'document_type_id', 'title', 'year'
     ];
 
+    protected $casts = [
+        'id' => HashId::class
+    ];
+
     public function documentType()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id', 'id');

@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Services\HashIdService;
+use Exception;
+use Illuminate\Support\Facades\Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Route::bind('id', function($hashId){
+            try{
+                return (new HashIdService())->decode($hashId);
+            }catch(Exception $e){
+                abort(404, 'No item found with this id!');
+            }
+        });
     }
 }

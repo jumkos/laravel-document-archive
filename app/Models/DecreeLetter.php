@@ -9,4 +9,8 @@ class DecreeLetter extends Model
 {
     use SoftDeletes;
     protected $fillable = ['letter_number', 'date', 'subject'];
+
+    protected $casts = [
+        'id' => HashId::class
+    ];
 }

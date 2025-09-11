@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class StudyProgram extends Model
 {
     use SoftDeletes;
-    
+
     protected $fillable = ['name'];
+
+    protected $casts = [
+        'id' => HashId::class
+    ];
 }

@@ -11,6 +11,10 @@ class DocumentType extends Model
 
     protected $fillable = ['name'];
 
+    protected $casts = [
+        'id' => HashId::class
+    ];
+
     public function theses()
     {
         return $this->hasMany(Thesis::class, 'document_type_id', 'id');
