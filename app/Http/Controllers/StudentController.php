@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
+use App\Services\HashIdService;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -12,7 +13,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = \App\Models\Student::all();
+        $students = \App\Models\Student::with('studyProgram')->get();
         return ApiResponse::ok($students->toArray());
     }
 
@@ -21,12 +22,21 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $hash = new HashIdService();
+
+        if ($request->has('study_program_id')) {
+            $request->merge([
+                'study_program_id' => $hash->decode($request->study_program_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'student_number' => 'required|string|max:255|unique:students',
             'study_program_id' => 'required|integer|exists:study_programs,id,deleted_at,NULL',
         ]);
         $student = \App\Models\Student::create($validated);
+        $student->load('studyProgram');
         return ApiResponse::ok($student->toArray());
     }
 
@@ -39,6 +49,7 @@ class StudentController extends Controller
         if (!$student) {
             return ApiResponse::notFound();
         }
+        $student->load('studyProgram');
         return ApiResponse::ok($student->toArray());
     }
 
@@ -51,11 +62,21 @@ class StudentController extends Controller
         if (!$student) {
             return ApiResponse::notFound();
         }
+
+        $hash = new HashIdService();
+
+        if ($request->has('study_program_id')) {
+            $request->merge([
+                'study_program_id' => $hash->decode($request->study_program_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'study_program_id' => 'required|integer|exists:study_programs,id,deleted_at,NULL',
         ]);
         $student->update($validated);
+        $student->load('studyProgram');
         return ApiResponse::ok($student->toArray());
     }
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
+use App\Services\HashIdService;
 use Illuminate\Http\Request;
+use Log;
 
 class ExaminerDecreeController extends Controller
 {
@@ -12,7 +14,7 @@ class ExaminerDecreeController extends Controller
      */
     public function index()
     {
-        $decrees = \App\Models\ExaminerDecree::with('lecturers')->get();
+        $decrees = \App\Models\ExaminerDecree::with('lecturers')->with('student')->with('documentType')->get();
         return ApiResponse::ok($decrees->toArray());
     }
 
@@ -21,6 +23,29 @@ class ExaminerDecreeController extends Controller
      */
     public function store(Request $request)
     {
+        $hash = new HashIdService();
+
+        // replace request input dengan id asli
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
+        if ($request->has('lecturer_ids')) {
+            $request->merge([
+                'lecturer_ids' => collect($request->lecturer_ids)
+                    ->map(fn ($id) => $hash->decode($id))
+                    ->toArray(),
+            ]);
+        }
+
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255|unique:examiner_decrees',
             'date' => 'required|date',
@@ -31,12 +56,16 @@ class ExaminerDecreeController extends Controller
             'lecturer_ids' => 'array',
             'lecturer_ids.*' => 'integer|exists:lecturers,id,deleted_at,NULL',
         ]);
+
+
         $lecturerIds = $request->input('lecturer_ids', []);
         $decree = \App\Models\ExaminerDecree::create($validated);
+
         if (!empty($lecturerIds)) {
             $decree->lecturers()->sync($lecturerIds);
         }
         $decree->load('lecturers')->load('student')->load('documentType');
+
         return ApiResponse::ok($decree->toArray());
     }
 
@@ -45,10 +74,12 @@ class ExaminerDecreeController extends Controller
      */
     public function show(string $id)
     {
-        $decree = \App\Models\ExaminerDecree::with('lecturers')->with('student')->with('documentType')->find($id);
+        $decree = \App\Models\ExaminerDecree::find($id);
         if (!$decree) {
             return ApiResponse::notFound();
         }
+        $decree->load('lecturers')->load('student')->load('documentType');
+
         return ApiResponse::ok($decree->toArray());
     }
 
@@ -61,6 +92,29 @@ class ExaminerDecreeController extends Controller
         if (!$decree) {
             return ApiResponse::notFound();
         }
+
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
+        if ($request->has('lecturer_ids')) {
+            $request->merge([
+                'lecturer_ids' => collect($request->lecturer_ids)
+                    ->map(fn ($id) => $hash->decode($id))
+                    ->toArray(),
+            ]);
+        }
+
         $validated = $request->validate([
             'date' => 'required|date',
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
@@ -75,7 +129,8 @@ class ExaminerDecreeController extends Controller
         if (!empty($lecturerIds)) {
             $decree->lecturers()->sync($lecturerIds);
         }
-        $decree->load('lecturers');
+        $decree->load('lecturers')->load('student')->load('documentType');
+
         return ApiResponse::ok($decree->toArray());
     }
 

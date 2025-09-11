@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
+use App\Services\HashIdService;
 use Illuminate\Http\Request;
 
 class SupervisorDecreeController extends Controller
@@ -12,7 +13,7 @@ class SupervisorDecreeController extends Controller
      */
     public function index()
     {
-        $decrees = \App\Models\SupervisorDecree::all();
+        $decrees = \App\Models\SupervisorDecree::with('lecturers')->with('student')->with('documentType')->get();
         return ApiResponse::ok($decrees->toArray());
     }
 
@@ -21,6 +22,28 @@ class SupervisorDecreeController extends Controller
      */
     public function store(Request $request)
     {
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
+        if ($request->has('lecturer_ids')) {
+            $request->merge([
+                'lecturer_ids' => collect($request->lecturer_ids)
+                    ->map(fn ($id) => $hash->decode($id))
+                    ->toArray(),
+            ]);
+        }
+
         $validated = $request->validate([
             'letter_number' => 'required|string|max:255|unique:supervisor_decrees',
             'date' => 'required|date',
@@ -36,7 +59,8 @@ class SupervisorDecreeController extends Controller
         if (!empty($lecturerIds)) {
             $decree->lecturers()->sync($lecturerIds);
         }
-        $decree->load('lecturers');
+        $decree->load('lecturers')->load('student')->load('documentType');
+
         return ApiResponse::ok($decree->toArray());
     }
 
@@ -49,6 +73,8 @@ class SupervisorDecreeController extends Controller
         if (!$decree) {
             return ApiResponse::notFound();
         }
+        $decree->load('lecturers')->load('student')->load('documentType');
+
         return ApiResponse::ok($decree->toArray());
     }
 
@@ -61,6 +87,29 @@ class SupervisorDecreeController extends Controller
         if (!$decree) {
             return ApiResponse::notFound();
         }
+
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
+        if ($request->has('lecturer_ids')) {
+            $request->merge([
+                'lecturer_ids' => collect($request->lecturer_ids)
+                    ->map(fn ($id) => $hash->decode($id))
+                    ->toArray(),
+            ]);
+        }
+
         $validated = $request->validate([
             'date' => 'required|date',
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',

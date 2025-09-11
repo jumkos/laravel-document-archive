@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
+use App\Services\HashIdService;
 use Illuminate\Http\Request;
 
 class DiplomaController extends Controller
@@ -12,7 +13,7 @@ class DiplomaController extends Controller
      */
     public function index()
     {
-        $diplomas = \App\Models\Diploma::all();
+        $diplomas = \App\Models\Diploma::with('student')->get();
         return ApiResponse::ok($diplomas->toArray());
     }
 
@@ -21,6 +22,14 @@ class DiplomaController extends Controller
      */
     public function store(Request $request)
     {
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
@@ -39,6 +48,7 @@ class DiplomaController extends Controller
         if (!$diploma) {
             return ApiResponse::notFound();
         }
+        $diploma->load('student');
         return ApiResponse::ok($diploma->toArray());
     }
 
@@ -51,11 +61,21 @@ class DiplomaController extends Controller
         if (!$diploma) {
             return ApiResponse::notFound();
         }
+
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
         ]);
         $diploma->update($validated);
+        $diploma->load('student');
         return ApiResponse::ok($diploma->toArray());
     }
 

@@ -19,7 +19,7 @@ class HashIdService
     public function decode($hashId)
     {
         if(is_int($hashId))
-            return $hashId;
+            return -1;
         return $this->hashIds->decode($hashId)[0];
     }
 }

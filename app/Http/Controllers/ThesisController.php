@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\ApiResponse;
+use App\Services\HashIdService;
 use Illuminate\Http\Request;
 
 class ThesisController extends Controller
@@ -12,7 +13,7 @@ class ThesisController extends Controller
      */
     public function index()
     {
-        $theses = \App\Models\Thesis::all();
+        $theses = \App\Models\Thesis::with('student')->with('documentType')->get();
         return ApiResponse::ok($theses->toArray());
     }
 
@@ -21,6 +22,20 @@ class ThesisController extends Controller
      */
     public function store(Request $request)
     {
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
@@ -28,6 +43,7 @@ class ThesisController extends Controller
             'title' => 'required|string|max:255|unique:theses',
         ]);
         $thesis = \App\Models\Thesis::create($validated);
+        $thesis->load('student')->load('documentType');
         return ApiResponse::ok($thesis->toArray());
     }
 
@@ -40,6 +56,7 @@ class ThesisController extends Controller
         if (!$thesis) {
             return ApiResponse::notFound();
         }
+        $thesis->load('student')->load('documentType');
         return ApiResponse::ok($thesis->toArray());
     }
 
@@ -52,12 +69,28 @@ class ThesisController extends Controller
         if (!$thesis) {
             return ApiResponse::notFound();
         }
+
+        $hash = new HashIdService();
+
+        if ($request->has('student_id')) {
+            $request->merge([
+                'student_id' => $hash->decode($request->student_id),
+            ]);
+        }
+
+        if ($request->has('document_type_id')) {
+            $request->merge([
+                'document_type_id' => $hash->decode($request->document_type_id),
+            ]);
+        }
+
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
             'year' => 'required|string|max:4',
         ]);
         $thesis->update($validated);
+        $thesis->load('student')->load('documentType');
         return ApiResponse::ok($thesis->toArray());
     }
 
