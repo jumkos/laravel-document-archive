@@ -13,7 +13,7 @@ class ThesisController extends Controller
      */
     public function index()
     {
-        $theses = \App\Models\Thesis::with('student')->with('documentType')->get();
+        $theses = \App\Models\Thesis::with('student')->with('documentType')->with('studyProgram')->get();
         return ApiResponse::ok($theses->toArray());
     }
 
@@ -56,7 +56,7 @@ class ThesisController extends Controller
         if (!$thesis) {
             return ApiResponse::notFound();
         }
-        $thesis->load('student')->load('documentType');
+        $thesis->load('student')->load('documentType')->load('studyProgram');
         return ApiResponse::ok($thesis->toArray());
     }
 

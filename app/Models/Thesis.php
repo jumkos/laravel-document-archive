@@ -10,7 +10,7 @@ class Thesis extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['student_id', 'document_type_id', 'year', 'title'];
+    protected $fillable = ['student_id', 'document_type_id','study_program_id', 'year', 'title'];
     protected $hidden = ['deleted_at'];
 
     public function toArray()
@@ -35,5 +35,10 @@ class Thesis extends Model
     public function documentType()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id', 'id');
+    }
+
+       public function studyProgram()
+    {
+        return $this->belongsTo(StudyProgram::class, 'student_id', 'id');
     }
 }
