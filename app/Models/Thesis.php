@@ -37,15 +37,15 @@ class Thesis extends Model
         return $this->belongsTo(DocumentType::class, 'document_type_id', 'id');
     }
 
-   public function studyProgram()
-{
-    return $this->hasOneThrough(
-        StudyProgram::class,
-        Student::class,
-        'id',
-        'id',
-        'student_id',
-        'study_program_id'
-    );
-}
+    public function studyProgram()
+    {
+        return $this->hasOneThrough(
+            StudyProgram::class,
+            Student::class,
+            'id',
+            'id',
+            'student_id',
+            'study_program_id'
+        );
+    }
 }

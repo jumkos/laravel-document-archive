@@ -87,7 +87,7 @@ class ThesisController extends Controller
         $validated = $request->validate([
             'student_id' => 'required|integer|exists:students,id,deleted_at,NULL',
             'document_type_id' => 'required|integer|exists:document_types,id,deleted_at,NULL',
-            'title' => 'required|string|max:255|unique:theses',
+            'title' => 'required|string|max:255',
             'year' => 'required|string|max:4',
         ]);
         $thesis->update($validated);
