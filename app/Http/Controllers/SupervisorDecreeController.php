@@ -13,7 +13,7 @@ class SupervisorDecreeController extends Controller
      */
     public function index()
     {
-        $decrees = \App\Models\SupervisorDecree::with('lecturers')->with('student')->with('documentType')->get();
+        $decrees = \App\Models\SupervisorDecree::with('lecturers')->with('student')->with('documentType')->with('studyProgram')->get();
         return ApiResponse::ok($decrees->toArray());
     }
 
@@ -73,7 +73,7 @@ class SupervisorDecreeController extends Controller
         if (!$decree) {
             return ApiResponse::notFound();
         }
-        $decree->load('lecturers')->load('student')->load('documentType');
+        $decree->load('lecturers')->load('student')->load('studyProgram')->load('documentType');
 
         return ApiResponse::ok($decree->toArray());
     }

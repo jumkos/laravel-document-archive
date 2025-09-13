@@ -11,7 +11,7 @@ class SupervisorDecree extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'letter_number', 'date', 'student_id', 'document_type_id', 'title', 'year'
+        'letter_number', 'date', 'student_id', 'document_type_id','study_program_id', 'title', 'year'
     ];
     protected $hidden = ['deleted_at'];
 
@@ -26,6 +26,7 @@ class SupervisorDecree extends Model
         $array['student_id'] = $hashService->encode($this->attributes['student_id']);
         $array['document_type_id'] = $hashService->encode($this->attributes['document_type_id']);
 
+
         return $array;
     }
 
@@ -37,6 +38,11 @@ class SupervisorDecree extends Model
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_id', 'id');
+    }
+
+    public function studyProgram()
+    {
+        return $this->belongsTo(StudyProgram::class, 'student_id', 'id');
     }
 
     public function lecturers()
